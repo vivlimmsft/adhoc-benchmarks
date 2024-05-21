@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
 using dotnet_benchmarks_scratch;
 
-var summary = BenchmarkRunner.Run<MyBenchmarks>();
+BenchmarkRunner.Run<MyBenchmarks>();
+BenchmarkRunner.Run<TaskWhenAll>();
