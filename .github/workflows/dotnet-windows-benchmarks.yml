@@ -1,0 +1,45 @@
+name: Run benchmarks (Windows)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: windows-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+    env:
+      Solution_Name: dotnet-benchmarks-scratch/dotnet-benchmarks-scratch.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Run benchmark
+      run: dotnet run -c Release --project .\dotnet-benchmarks-scratch\dotnet-benchmarks-scratch.csproj
+
+    - name: Create index.html
+      # super crude
+      run: ls .\BenchmarkDotNet.Artifacts\results\*.html | %{ $_.Name } | % {"<a href='$_'>$_</a>"} > .\BenchmarkDotNet.Artifacts\results\index.html
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: .\BenchmarkDotNet.Artifacts\results # The folder the action should deploy.
