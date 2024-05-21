@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "dotnet-benchmarks-scratch": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
