@@ -6,7 +6,7 @@ namespace dotnet_benchmarks_scratch;
 [MemoryDiagnoser]
 public class AsyncInitializingProperties
 {
-    [Params(10000)]
+    [Params(1000000)]
     public static int N;
 
     [Benchmark]
@@ -81,6 +81,50 @@ public class AsyncInitializingProperties
             for (int i = 0; i < N; i++)
             {
                 this.asyncInitProperties?.innerImplementation.Echo(i);
+            }
+        }
+
+        private record AsyncInitProperties(InnerImplementation innerImplementation);
+    }
+
+    public class AsyncInitPropertyRecordWithThrowingGetter : IAsyncInitializer
+    {
+        private AsyncInitProperties? asyncInitProperties;
+        private InnerImplementation innerImplementation => this.asyncInitProperties?.innerImplementation ?? throw new Exception("oh no!");
+
+        public async Task InitializeAsync()
+        {
+            var innerImplementation = await InnerImplementation.FactoryAsync();
+            this.asyncInitProperties = new AsyncInitProperties(innerImplementation);
+        }
+
+        public void Invoke()
+        {
+            for (int i = 0; i < N; i++)
+            {
+                this.innerImplementation.Echo(i);
+            }
+        }
+
+        private record AsyncInitProperties(InnerImplementation innerImplementation);
+    }
+
+    public class AsyncInitPropertyRecordWithNullForgivingGetter : IAsyncInitializer
+    {
+        private AsyncInitProperties? asyncInitProperties;
+        private InnerImplementation innerImplementation => this.asyncInitProperties!.innerImplementation;
+
+        public async Task InitializeAsync()
+        {
+            var innerImplementation = await InnerImplementation.FactoryAsync();
+            this.asyncInitProperties = new AsyncInitProperties(innerImplementation);
+        }
+
+        public void Invoke()
+        {
+            for (int i = 0; i < N; i++)
+            {
+                this.innerImplementation.Echo(i);
             }
         }
 
