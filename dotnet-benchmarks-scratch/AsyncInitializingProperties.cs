@@ -26,6 +26,14 @@ public class AsyncInitializingProperties
     }
 
     [Benchmark]
+    public async Task AsyncInitPropertyThrowingGetterRecordAsync()
+    {
+        var initializedClass = new AsyncInitPropertyRecordWithThrowingGetter();
+        await initializedClass.InitializeAsync();
+        initializedClass.Invoke();
+    }
+
+    [Benchmark]
     public async Task AsyncInitPropertyNullableRecordStructAsync()
     {
         var initializedClass = new AsyncInitPropertyNullableRecordStruct();
